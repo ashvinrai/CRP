@@ -1,4 +1,4 @@
-
+import util
 import sys
 import socket
 
@@ -19,18 +19,26 @@ elif len(sys.argv) > 3:
 SOURCE_IP = int(sys.argv[1])
 SOURCE_PORT = int(sys.argv[2])
 window = 1
+State = "NONE"
 
 while (True):
    word = str(raw_input(''))
    word = str.split(word)
    if (word[0] == "connect"):
-      if s is null:
+      if State == "NONE":
          print "connect"
-         packet = make_packet(source_port, dest_port, seq, acknum, syn, ack, end, window, data):
+         seq = 0
+         acknum = 0
+         packet = util.make_packet("", SOURCE_PORT, seq, acknum, True, False, False, window, "") #Flags = SYN, ACK, END
          s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
          dest_addr = (SOURCE_IP, int(SOURCE_PORT))
          s.sendto(packet, dest_addr)
+         #Three way handshake
+         State = "CONNECTED"
    if (word[0] == "get"):
-      filename = word[1]
+      if State == "CONNECTED":
+         filename = word[1]
+         packet = util.make_packet("", SOURCE_PORT, seq, acknum, True, False, False, window, "get " + filename)
+         s.sendto(packet, dest_addr)
    if (word[0] == "window")
       window = word[1]
