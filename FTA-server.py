@@ -2,6 +2,7 @@ import socket
 import util
 import sys
 
+debugMode = False
 def log(s):
     if debugMode:
         print s
@@ -10,7 +11,7 @@ if len(sys.argv) < 2:
     print 'Too little arguments! Must input FTA-Server.py and port (optional: \'-d\' for debug mode)'
     sys.exit()
 elif len(sys.argv) > 2:
-    if len(sys.argv) == 3 and sys.argv[3] == "-d":
+    if len(sys.argv) == 3 and sys.argv[2] == "-d":
         debugMode = True
         log("Entering debug mode...")
     else:
@@ -27,16 +28,15 @@ print 'Listening on port', SOURCE_PORT, '...'
 not_connected = True
 while (not_connected):
 	packet, addr = s.recvfrom(4096)
-	print 'received packet'
 	header, data, checksum = util.unpack_packet(packet)
-	print 'SYN = ', header[4]
+	log('Received packet. SYN = ' +  header[4] + '. . .')
 	if (header[4].strip() == "True"): #Receive SYN
 		packet = util.make_packet("", SOURCE_PORT, seq, acknum, True, True, False, window, "") #Send SYNACK
 		s.sendto(packet, addr)
-		print 'Sent SYN ACK'
+		log('Sent SYN ACK . . .')
 		packet, addr = s.recvfrom(4096)
 		header, data, checksum = util.unpack_packet(packet)
-		print 'Received. ACK = ', header[5]
+		log('Received packet. ACK = ' + header[5])
 		if (header[5].strip() == "True"):
 			not_connected = False
 			print 'Connection is Established'
@@ -47,8 +47,15 @@ while (True):
 	print 'cmd =', cmd
 	if cmd == "get":
 		filename = data.split(" ")[1]
-		print filename
+		log('Requesting filename: ' + filename)
+		##TO-DO
+		##Received filename from client. Now must send the file over to client
 
+
+
+
+
+	##This method of getting user input cannot work; can have a diff thread for listening to user input instead
 	#word = str(raw_input(''))
 	#if (word[0] == "window"):
 	#	window = word[1]
