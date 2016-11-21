@@ -43,6 +43,9 @@ while (not_connected):
 
 while (True):
 	packet, addr = s.recvfrom(4096)
+	print packet
+	print addr
+	header, data, checksum = util.unpack_packet(packet)
 	cmd = data.split(" ")[0]
 	print 'cmd =', cmd
 	if cmd == "get":
@@ -50,8 +53,7 @@ while (True):
 		log('Requesting filename: ' + filename)
 		##TO-DO
 		##Received filename from client. Now must send the file over to client
-
-
+		util.request_file(filename)
 
 
 

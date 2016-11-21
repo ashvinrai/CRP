@@ -1,4 +1,5 @@
 import binascii
+import array
 
 def make_packet(source_port, dest_port, seq, acknum, syn, ack, end, window, data):
 	#flags = 0 | (SYN << 2) | (ACK << 1) | END 
@@ -22,3 +23,19 @@ def create_checksum(packet):
 def check_checksum(packet):
 	header, data, checksum = unpack_packet(packet)
 	return create_checksum(header + data) == checksum
+
+def request_file(filename):
+
+	f = open(filename, 'r')
+	x = True
+	l = []
+	while(x):
+		div = f.read(16)
+		if (div != ""):
+			s = []
+			for c in div: s.append(ord(c))
+			l.append(s)
+		else:
+			x = False
+	print chr(l[0][0])
+	print open(filename, "rb").read(512)
