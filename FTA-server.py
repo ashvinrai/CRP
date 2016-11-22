@@ -83,10 +83,11 @@ while (True):
 				else:
 					window_pointer+=1
 			packet, addr = s.recvfrom(4096)
-			print packet
+			#print packet
 			header, data, checksum = util.unpack_packet(packet)
 			seq = int(header[3])
 			end = header[6]
+		print "File transfer complete"
 
 	##This method of getting user input cannot work; can have a diff thread for listening to user input instead
 	#word = str(raw_input(''))

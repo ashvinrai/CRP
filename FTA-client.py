@@ -54,16 +54,18 @@ while (True):
         ##Sent filename to server. Server must now send the file back
         packets = []
         end = False
+        msg = ""
         while end != True:
           x = 0
           while x < window:
             packet, addr = s.recvfrom(4096)
-            print packet
+            #print packet
             header, data, checksum = util.unpack_packet(packet)
             if str(acknum) == header[2] and header[4] and util.check_checksum(packet):
               packets.append(packet)
               x += 1
-              acknum += 1 
+              acknum += 1
+              msg += data 
               if header[6] == "True":
                 packet = util.make_packet("", SOURCE_PORT, seq, acknum, False, True, True, window, "END")
                 s.sendto(packet, dest_addr)
@@ -74,6 +76,10 @@ while (True):
               print "missing or damaged packet"
           packet = util.make_packet("", SOURCE_PORT, seq, acknum, False, True, False, window, "ACK")
           s.sendto(packet, dest_addr)
+        print msg
+        f = open('storyRECV.txt', 'w')
+        f.write(msg)
+        f.close()
       else:
         print 'Cannot get a file: You did not create a connection yet!'
    if (word[0] == "window"):
