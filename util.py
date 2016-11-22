@@ -32,10 +32,8 @@ def request_file(filename):
 	while(x):
 		div = f.read(16)
 		if (div != ""):
-			s = []
-			for c in div: s.append(ord(c))
-			l.append(s)
+			l.append(div)
 		else:
 			x = False
-	print chr(l[0][0])
-	print open(filename, "rb").read(512)
+
+	return l

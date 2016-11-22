@@ -45,12 +45,15 @@ while (True):
           State = "CONNECTED"
    if (word[0] == "get"):
       if State == "CONNECTED":
+        acknum = 1
         filename = word[1]
         log('get command with filename: ' + filename)
         packet = util.make_packet("", SOURCE_PORT, seq, acknum, True, False, False, window, "get " + filename)
         s.sendto(packet, dest_addr)
         ##TO-DO
         ##Sent filename to server. Server must now send the file back
+        msg, addr = s.recvfrom(4096)
+        print msg
       else:
         print 'Cannot get a file: You did not create a connection yet!'
    if (word[0] == "window"):
