@@ -60,7 +60,7 @@ while (True):
             packet, addr = s.recvfrom(4096)
             print packet
             header, data, checksum = util.unpack_packet(packet)
-            if str(acknum) == header[2] and header[4]:
+            if str(acknum) == header[2] and header[4] and util.check_checksum(packet):
               packets.append(packet)
               x += 1
               acknum += 1 
