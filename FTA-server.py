@@ -18,7 +18,7 @@ elif len(sys.argv) > 2:
         print 'Too many arguments! Must input FTA-Server.py and port (optional: \'-d\' for debug mode)'
         sys.exit()
 
-window = 5
+window = 1
 window_pointer = 0
 SOURCE_PORT = int(sys.argv[1])
 seq = 0
@@ -44,8 +44,6 @@ while (not_connected):
 
 while (True):
 	packet, addr = s.recvfrom(4096)
-	print packet
-	print addr
 	header, data, checksum = util.unpack_packet(packet)
 	cmd = data.split(" ")[0]
 	print 'cmd =', cmd
@@ -59,13 +57,36 @@ while (True):
 		packets = []
 		x = 0
 		while x < len(data):
-			seq += 1
-			packet = util.make_packet("", SOURCE_PORT, seq, acknum, False, False, False, window, data[window_pointer])
+			if x == len(data) - 1:
+				packet = util.make_packet("", SOURCE_PORT, x, acknum, True, False, True, window, data[x])
+			else:
+				packet = util.make_packet("", SOURCE_PORT, x, acknum, True, False, False, window, data[x])
 			packets.append(packet)
-			window_pointer += 1
 			x += 1
-		print packets[0]
-		s.sendto(packets[0], addr)
+		
+		#first [window] packets sent
+		while window_pointer < window:
+			s.sendto(packets[window_pointer], addr)
+			window_pointer+=1
+
+		packet, addr = s.recvfrom(4096)
+		print packet
+		header, data, checksum = util.unpack_packet(packet)
+		seq = int(header[3])
+		end = "False"
+		while end != "True": 
+			window_pointer = 0
+			while window_pointer < window:
+				s.sendto(packets[window_pointer + seq], addr)
+				if(seq+window_pointer == len(packets) - 1):
+					window_pointer = window
+				else:
+					window_pointer+=1
+			packet, addr = s.recvfrom(4096)
+			print packet
+			header, data, checksum = util.unpack_packet(packet)
+			seq = int(header[3])
+			end = header[6]
 
 	##This method of getting user input cannot work; can have a diff thread for listening to user input instead
 	#word = str(raw_input(''))
